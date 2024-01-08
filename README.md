@@ -1,4 +1,4 @@
-# Spatial_eDNA
+# Marine mammal eDNA distribution
 
 The repository comprises of R code that can be used to obtain environmental layers, process metadata from Hake sampling and assess the spatial distribution of eDNA of various marine mammals using GAMs. The processing steps are divided into four parts: 
 
