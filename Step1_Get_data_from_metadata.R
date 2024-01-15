@@ -156,22 +156,6 @@ md.taxa.long.rep <- md.taxa.rep %>%
   #mutate(rep = as.numeric(rep)) %>% 
   #group_by(sampleID, species, read_count) %>% 
   mutate(Presence = case_when(read_count > 0 ~ 1, TRUE ~ 0)) 
-# %>% 
-#   ungroup() %>% 
-#   group_by(sampleID, species) %>% 
-#   mutate(sum_occurrence=sum(occurrence)) %>% 
-#   ungroup() %>% 
-#   group_by(sampleID) %>%
-#   mutate(max_rep = max(as.numeric(rep))) %>%
-#   mutate(prob_detection = sum_occurrence/max_rep) %>% 
-#   ungroup() %>% 
-#   group_by(sampleID, species) %>% 
-#   slice_head() %>% 
-#   ungroup() %>% 
-#   select(-rep,-read_count,-occurrence) %>% 
-#   relocate(station, .after = sampleID) %>% 
-#   unite(col = "sampleID_station", sampleID:station, sep = "_")
-
   
 #SUMMARY
 summary <-md.taxa.long %>% 
