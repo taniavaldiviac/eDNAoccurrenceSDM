@@ -16,16 +16,16 @@ library("geobgu")
 
 -------------------------------------------
   #Retrieve Environmental Data, 
-  #this is provitional environmental data not from the sampling dates, but means from 1994 to 2009
+  #this is provisional environmental data not from the sampling dates but yearly means from 1994 to 2009
 ------------------------------------------
 
-# Extent of area of interest California Current
+# Extent area of interest California Current
 # latmax <- 48.5416666716337204
 # latmin <-37.7916653901338577
 # lonmax <- -122.5416692097981866
 # lonmin <- -126.6250025431315152
 
-# Extent of area of interest WA cost
+# Extent area of interest WA coast
 latmax <- 50.0416
 latmin <- 32.375
 lonmax <- -115.7917
@@ -35,46 +35,46 @@ lonmin <- -130.2083
 # create a matrix:
 bb <- cbind(c(lonmin,lonmax,lonmax,lonmin,lonmin),
             c(latmin,latmin,latmax,latmax,latmin)) %>%
-  # put that matrix into a list, because that's what `st_polygon()` needs
+  # put that matrix into a list because that's what `st_polygon()` needs
   list() %>%
   # Make the matrix a 'simple features' polygon:
   sf::st_polygon() %>%
   # and let's make it a simple feature column and give it information about the projection:
   sf::st_sfc(crs="+proj=longlat +datum=WGS84") %>%
-  # finally, let's put the sfc in a simple features data.frame in the variable `geometry`:
+  # Finally, let's put the sfc in a simple features data.frame in the variable `geometry`:
   sf::st_sf(name="Study Site",geometry=.)
 
 --------------------------------------
   # Download environmental layers
   --------------------------------------
   
-#Select envirnnomental variables. More infor see https://bio-oracle.org/code.php, http://marspec.org/
+#Select envirnnomental variables. For more info see https://bio-oracle.org/code.php, http://marspec.org/
 datasets <- list_datasets(terrestrial = FALSE, marine = TRUE)
 layers <- list_layers(datasets)
 #write.csv(layers, "Environmental_layers_metadata.csv")
 
-# Create directory and the list of environmental variables you need
+# Create a directory and the environmental variables you need
 #dir.create("downloaded_predictors/Environmental_Seascape/", showWarnings = FALSE)
+
 #Which variables?
 
-layers <- c("MS_bathy_5m","MS_biogeo05_dist_shore_5m",)
+###-------- If BIO ORACLE VARIABLES
+layers <- c("MS_bathy_5m","MS_biogeo05_dist_shore_5m","BO_sstmean"....) #modify according to your needs
 
-#sstmean<-("BO_sstmean")
-# Download marine layers to directory. 
-
+# Download marine layers to a directory. 
 bathy <- sdmpredictors::load_layers(layers, datadir = "downloaded_predictors/CMEMs/August2019/USA-Coast/", rasterstack = TRUE)
 
-#Load env layers, you have to unzip the files 
+#Load env layers; you have to unzip the files 
 
-#Work with netCDF layers
+### -------- If the layers are in netCDF format from COPERNICUS, I download the netCDF variables and transform them into tif files before loading them.
+
 #https://rpubs.com/boyerag/297592
-nc_data <- nc_open('./downloaded_predictors/CMEMs/USA-Coast/0-0083/1_August/depth/nc/cmems_mod_glo_phy_my_0.083_P1M-m_1697395376722.nc')
-{
-  sink('./downloaded_predictors/CMEMs/USA-Coast/0-0083/1_August/depth/nc/cmems_mod_glo_phy_my_0.083_P1M-m_1697395376722_metadata.txt')
-  print(nc_data)
-  sink()
-}
-
+#nc_data <- nc_open('./downloaded_predictors/CMEMs/USA-Coast/0-0083/1_August/depth/nc/cmems_mod_glo_phy_my_0.083_P1M-m_1697395376722.nc')
+#{
+#  sink('./downloaded_predictors/CMEMs/USA-Coast/0-0083/1_August/depth/nc/cmems_mod_glo_phy_my_0.083_P1M-m_1697395376722_metadata.txt')
+#  print(nc_data)
+#  sink()
+#}
 
 ####envCov_USA_surface_025_082019
 bathy_025<-raster('./downloaded_predictors/CMEMs/USA-Coast/0-25/3_biooracle_0-025/bathy.tif')
