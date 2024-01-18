@@ -6,8 +6,6 @@ The repository contains R code that can be utilized to acquire environmental lay
 
 **Step 2**: Get environmental layers
 
-**Step 3**: Model all 
-
-**Step 4**: Model Laob 
+**Step 3**: Model unique
 
 These steps can be used to analyze and evaluate different data sets for marine mammal studies.
