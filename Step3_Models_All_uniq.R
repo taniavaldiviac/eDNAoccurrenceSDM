@@ -1,3 +1,10 @@
+list.of.packages=c("readr","dplyr","ggplot2", "here", "raster", "mgcv","gratia", "librarian", "lme4", "maps","sf", "car", "usdm", "mgcv.helper","dplyr", 
+                   "dsm", "Distance", "knitr", "captioner", "ggplot2", "rgdal","maptools", "tweedie","stringr","fuzzySim")
+detach("plyr")
+new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
+if(length(new.packages)) install.packages(new.packages, dependencies = T)
+library(librarian)
+librarian::shelf(list.of.packages)
 
 
 md.taxa.long.formated.env083.uniq <- md.taxa.long.formated.env083 %>% 
@@ -156,23 +163,26 @@ grid.arrange(grobs = plots_list, ncol = 4)
 
 view(formula_str)
 
-#### MODEL SELECTION -- Laob surface Laob.unique_083_F
-Laob.surface.gam<-gam(Presence~s(lon,lat,bs="ds")+
-                      # s(bathy,bs=	"ts",k=3) +
-                       s(dist_shore,bs=	"ts",k=3) +
-                      # s(OML,bs=	"ts",k=3) +
-                      # s(npp,bs=	"ts",k=3) +
-                      # s(ESV,bs=	"ts",k=3) +
-                      # s(NWV,bs=	"ts",k=3) +
-                      # s(pelagicL_depth,bs=	"ts",k=3) +
-                      # s(SSH, bs="ts", k=3) +
-                      # s(zeu,bs=	"ts",k=3) +
-                        s(epi,bs=	"ts",k=3) +
-                       # s(zooc,bs=	"ts",k=3) +
-                        s(SWT,bs=	"ts",k=3),
-                        data = Laob.unique_083_F, family = binomial, method="REML",na.action = "na.fail")
+#### MODEL SELECTION -- 
 
-dd.dregde.fm2 <- dredge(Laob.surface.gam, rank = "AIC", extra="ICOMP", m.lim = c(2,5))
+# FULL MODEL Lagenorhynchus obliquidens (Laob.unique_083_F)
+
+set.seed(123)
+Full.gam<-gam(Presence~s(lon,bs="ts")+
+                s(lat,bs="ts")+
+                s(bathy,bs=	"ts") +
+                s(slope,bs=	"ts") +
+                s(dist_shore,bs=	"ts") +
+                s(SSH, bs="ts") +
+                s(SWT,bs=	"ts"),
+              data = Laob.unique_083_F, family = binomial, method="REML",na.action = "na.fail")
+
+dd.dregde.fm2 <- dredge(Full.gam, rank = "AIC", extra="ICOMP", m.lim = c(2,3),
+                        subset = c(!("s(SWT, bs = \"ts\")" & "s(SSH, bs = \"ts\")") &   
+                                     !("s(SWT, bs = \"ts\")" & "s(dist_shore, bs = \"ts\")") &
+                                     !("s(SSH, bs = \"ts\")" & "s(dist_shore, bs = \"ts\")")&
+                                     !("s(bathy, bs = \"ts\")" & "s(dist_shore, bs = \"ts\")")))
+
 
 (dd.subset.fm2<-subset(dd.dregde.fm2, delta < 2))
 
@@ -183,145 +193,56 @@ plot(dd.subset.fm2, labAsExpr = TRUE)
 confset.95p.fm2 <- get.models(dd.subset.fm2, cumsum(weight) <= .95)
 summary(confset.95p.fm2[[1]])
 
-#BEST MODEL
-best.model.Laob.AIC <- gam(Presence~ s(dist_shore,bs=	"ts",k=3)+
-                             s(SWT, bs = "ts",k=3),
-                           data = Laob.unique_083_F, family =binomial , method="REML")
+# BEST MODEL
 
-predictions =  predict(envCov_WA_surface_083_082019, model = best.model.Laob.AIC, type = "response")
-predictions[is.na(predictions[])] <- 0 
-spplot(predictions, colorkey = list(space = "left") ,scales = list(draw = TRUE))
-
-k.check(best.model.Laob.AIC)
+best.model.Laob.AIC <- gam(Presence~ s(slope,bs="ts")+s(lon,bs="ts")+s(SWT,bs="ts"), data = Laob.unique_083_F, family =binomial , method="REML")
+summary(best.model.Laob.AIC)
+gam.check(best.model.Laob.AIC)
 draw(best.model.Laob.AIC)
 summary(best.model.Laob.AIC)
 AIC(best.model.Laob.AIC)
-auc(Laob.test.surface_083_R$Presence, predict(best.model.Laob.surface.AIC, type = "response"))
+auc(Laob.unique_083_F$Presence, predict(best.model.Laob.AIC, type = "response"))
 
-# gam_eval <- pa_evaluate(p = Laob.unique_083_F[Laob.unique_083_F$Presence == 1, ],
-#                        a= Laob.unique_083_F[Laob.unique_083_F$Presence == 0, ],
-#                        model = best.model.Laob.surface.AIC,
-#                         type = "response")
-writeRaster(predictions,"~/Maxent/GAM_predictions/Laob_GAM_distshore_SWT.asc",overwrite=TRUE)
-write.csv(Laob.unique_083_F,"~/Maxent/Laob_presence.csv")
-
-##############
-#GBIF data for WA
-# Set the seed for the random-number generator to ensure results are similar
-set.seed(20210707)
-
-Laob_WA_uniq_PA<-read.csv("~/Maxent/occurrences/Laob/presence_absence/Laob_uniq.csv")
-coord <- Laob_WA_uniq_PA[,c(2,3)]%>% 
-  rename(lon=longitude)%>% 
-  rename(lat=latitude)# Order must be lon lat
-enviro_df<-raster::extract(envCov_WA_surface_083_082019,coord,df=TRUE) 
-Laob_WA_uniq_PA_env<-bind_cols(enviro_df,Laob_WA_uniq_PA) %>% 
-  dplyr::select(-c(umeso, lmeso)) %>% 
-  #na.omit() %>% 
-  rename(lonB=lon)%>% 
-  rename(latB=lat) %>% 
-  rename(lon=longitude)%>% 
-  rename(lat=latitude)
-write.csv(Laob_WA_uniq_PA_env,"~/Maxent/occurrences/Laob/presence_absence/Laob_WA_uniq_PA_env.csv")
-
-
-Laob_WA_uniq_PA_B<-read.csv("~/Maxent/occurrences/Laob/presence_absence/Laob_uniq_B.csv")
-coord <- Laob_WA_uniq_PA_B[,c(2,3)]%>% 
-  rename(lon=longitude)%>% 
-  rename(lat=latitude)# Order must be lon lat
-enviro_df<-raster::extract(envCov_WA_surface_083_082019,coord,df=TRUE) 
-Laob_WA_uniq_PA_B_env<-bind_cols(enviro_df,Laob_WA_uniq_PA_B) %>% 
-  dplyr::select(-c(umeso, lmeso)) %>% 
-  na.omit() %>% 
-  rename(lonB=lon)%>% 
-  rename(latB=lat) %>% 
-  rename(lon=longitude)%>% 
-  rename(lat=latitude)
-write.csv(Laob_WA_uniq_PA_B_env,"~/Maxent/occurrences/Laob/presence_absence/Laob_WA_uniq_PA_B_env.csv")
-
-
-Laob_WA_GBIF_25_PA<-read.csv("~/Maxent/occurrences/Laob/presence_absence/Laob_WA_GBIF_25_PA.csv")
-coord <- Laob_WA_GBIF_25_PA[,c(2,3)]%>% 
-  rename(lon=longitude)%>% 
-  rename(lat=latitude)# Order must be lon lat
-enviro_df<-raster::extract(envCov_WA_surface_083_082019,coord,df=TRUE) 
-Laob_WA_GBIF_25_PA_env<-bind_cols(enviro_df,Laob_WA_GBIF_25_PA) %>% 
-  dplyr::select(-c(umeso, lmeso)) %>% 
-  na.omit() %>% 
-  rename(lonB=lon)%>% 
-  rename(latB=lat) %>% 
-  rename(lon=longitude)%>% 
-  rename(lat=latitude)
-write.csv(Laob_WA_GBIF_25_PA_env,"~/Maxent/occurrences/Laob/presence_absence/Laob_WA_GBIF_25_PA_env.csv")
-
-Laob_WA_GBIF_25_PA_B<-read.csv("~/Maxent/occurrences/Laob/presence_absence/Laob_WA_GBIF_25_PA_B.csv")
-coord <- Laob_WA_GBIF_25_PA_B[,c(2,3)]%>% 
-  rename(lon=longitude)%>% 
-  rename(lat=latitude)# Order must be lon lat
-enviro_df<-raster::extract(envCov_WA_surface_083_082019,coord,df=TRUE) 
-Laob_WA_GBIF_25_PA_B_env<-bind_cols(enviro_df,Laob_WA_GBIF_25_PA_B) %>% 
-  dplyr::select(-c(umeso, lmeso)) %>% 
-  na.omit() %>% 
-  rename(lonB=lon)%>% 
-  rename(latB=lat) %>% 
-  rename(lon=longitude)%>% 
-  rename(lat=latitude)
-write.csv(Laob_WA_GBIF_25_PA_B_env,"~/Maxent/occurrences/Laob/presence_absence/Laob_WA_GBIF_25_PA_B_env.csv")
-
-
-Laob.GBIF.WA.gam<-gam(Presence~ s(lon,lat,bs="ds")+
-                         s(bathy) +
-                         s(dist_shore,bs=	"ts",k=3) +
-                        s(slope)+
-                        # s(OML,bs=	"ts") +
-                         s(npp) +
-                        # s(ESV,bs=	"ts") +
-                        # s(NWV,bs=	"ts") +
-                        # s(pelagicL_depth) +
-                        # s(SSH, bs="ts") +
-                        # s(zeu,bs=	"ts") +
-                      #  s(epi,bs=	"ts") +
-                        # s(zooc,bs=	"ts") +
-                        s(SWT),
-                      data = Laob_WA_GBIF_100_PA_env, family = binomial, method="REML",na.action = "na.fail")
-summary(Laob.GBIF.WA.gam)
-dd.dregde <- dredge(Laob.GBIF.WA.gam, rank = "AIC", extra="ICOMP", m.lim = c(2,4))
-(dd.subset.<-subset(dd.dregde, delta < 2))
-
-par(mar = c(3,5,6,4))
-plot(dd.subset., labAsExpr = TRUE)
-
-(dd.subset.[1])
-confset.95p <- get.models(dd.subset., cumsum(weight) <= .95)
-summary(confset.95p[[1]])
-
-#BEST MODEL
-
-Laob_WA_uniq_PA_env
-Laob_WA_uniq_PA_B_env
-Laob_WA_GBIF_25_PA_env
-Laob_WA_GBIF_25_PA_B_env
-Laob_WA_GBIF_50_PA_env
-
-best.model.Laob.GBIF.AIC <- gam(Presence~  s(lon, lat, bs = "ds") + s(npp) + s(slope),
-                           data = Laob_WA_GBIF_100_PA_env, family =binomial , method="REML")
-
-predictions =  predict(envCov_WA_surface_083_082019, model = best.model.Laob.GBIF.AIC, type = "response")
-predictions[is.na(predictions[])] <- 0 
+#Predict_1 To predict to a raster stack
+predictions =  predict(envCov_spol_surface_083_082019, model = best.model.Laob.AIC, type = "response")
+predictions[is.na(predictions[])] <- 0
 spplot(predictions, colorkey = list(space = "left") ,scales = list(draw = TRUE))
 
+#Predict_2 To predict to a dataframe
+Laob.predictions_df<-envCov_spol_surface_083_082019_df
+Laob.predictions_df$prediction =  predict(best.model.Laob.AIC,newdata =envCov_spol_surface_083_082019_df, type = "response")
 
-k.check(best.model.Laob.GBIF.AIC)
-draw(best.model.Laob.GBIF.AIC)
-plot(best.model.Laob.GBIF.AIC)
-summary(best.model.Laob.GBIF.AIC)
-AIC(best.model.Laob.GBIF.AIC)
-auc(best.model.Laob.GBIF.AIC$Presence, predict(best.model.Laob.GBIF.AIC, type = "response"))
+#dataframe to raster
+Laob.predictions_r<- Laob.predictions_df[,c(1,2,21)] %>% 
+  filter(!is.na(prediction))
+dfr <- rasterFromXYZ(Laob.predictions_r) 
+writeRaster(dfr,"~/Maxent/GAM_predictions/Laob_GAM_Jan17.asc",overwrite=TRUE)
 
-(gam_eval <- pa_evaluate(p = Laob_WA_GBIF_100_PA_env[Laob_WA_GBIF_100_PA_env$Presence == 1, ],
-                        a= Laob_WA_GBIF_100_PA_env[Laob_WA_GBIF_100_PA_env$Presence == 0, ],
-                        model = best.model.Laob.GBIF.AIC,
-                        type = "response"))
+#load USA shape
+USA_sf<-st_read("/Users/taniavc/Library/CloudStorage/GoogleDrive-tania.valdiviac@gmail.com/My Drive/SIG/Layers/USA.shp")
+USA_map <- st_as_sf(USA_sf)
+wa_or_ca_sf <- USA_sf %>% filter(STATE_NAME %in% c("Washington","Oregon", "California"))
+wa_or_ca_sf <- st_transform(wa_or_ca_sf, crs = st_crs(4326))
+plot_coords <- st_bbox(wa_or_ca_sf)
 
-writeRaster(predictions,"~/Maxent/GAM_predictions/Laob_GAM_distshore_SWT.asc",overwrite=TRUE)
-write.csv(Laob.unique_083_F,"~/Maxent/Laob_presence.csv")
+#Plot map
+map<- ggplot() +
+    geom_tile(data = Laob.predictions_r,
+            aes(x = x, y = y, fill = prediction)) +
+  geom_point(data = Laob.unique_083_F,
+             aes(x = lon, y = lat, color = as.factor(Presence)), size = 2) +
+  geom_sf(data = wa_or_ca_sf, fill = "darkgray", color = "darkgray") +
+  scale_fill_viridis() +
+  scale_color_manual(values = color_mapping) +
+  labs(title = "Pacific white-sided dolphin eDNA distribution") +
+  coord_sf(xlim = c(-127, -123), 
+           ylim = c(46.4, 48.5))
+
+map <- map + labs(fill = "eDNA presence prob",color="Species presence")
+
+map+theme(legend.position="right", legend.box = "vertical",plot.title = element_text(size = 12, face = "bold"),
+                              legend.title=element_text(size=7), 
+                              legend.text=element_text(size=7),
+                              legend.spacing.y = unit(0.5, 'cm'),
+          legend.margin = margin(0.2, 0.2, 0.2, 0.2, "cm"))
+
