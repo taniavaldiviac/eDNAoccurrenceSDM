@@ -1,0 +1,234 @@
+###
+
+#Step 2a Covariate correlation and other plots
+
+#Tania Valdivia Carrillo
+
+###
+
+###
+setwd("~/Library/CloudStorage/GoogleDrive-tania.valdiviac@gmail.com/My Drive/2.2023/05_MURI_Module_3_Tania/Documents/Manuscript_eDNA-occurrenceSDM/Github/")
+
+md.taxa.long.formated.env083.uniq <- md.taxa.long.formated.env083 %>% 
+  separate(sampleID_station, into = c("sampleID", "station"), sep = "_", extra = "merge", remove = FALSE) %>% 
+  group_by(station, species) %>%
+  mutate(presence_uniq = sum(Presence, na.rm = TRUE)) %>%
+  slice(1) %>% 
+  mutate(presence_uniq = ifelse(presence_uniq >= 1, 1, 0)) %>%
+  relocate(presence_uniq, .before = Presence) %>% 
+  ungroup() 
+
+write.csv(md.taxa.long.formated.env083.uniq,"./dataframes/md.taxa.long.formated.env083.uniq.csv")
+
+#md.taxa.long.formated.env083.uniq.envS.b<-read.csv("./dataframes/md.taxa.long.formated.env083.uniq.envS.b.csv")
+
+Laob.unique_083_F_A <- md.taxa.long.formated.env083.uniq  %>% 
+  filter(str_detect(species, "Lagenorhynchus obliquidens")) 
+
+Meno.unique_083_F_A <- md.taxa.long.formated.env083.uniq  %>% 
+  filter(str_detect(species, "Megaptera novaeangliae")) 
+
+Grgr.unique_083_F_A <- md.taxa.long.formated.env083.uniq  %>% 
+  filter(str_detect(species, "Grampus griseus")) 
+
+Libo.unique_083_F_A <- md.taxa.long.formated.env083.uniq  %>% 
+  filter(str_detect(species, "Lissodelphis borealis")) 
+
+Phda.unique_083_F_A <- md.taxa.long.formated.env083.uniq  %>% 
+  filter(str_detect(species, "Phocoenoides dalli")) 
+
+Phph.unique_083_F_A <- md.taxa.long.formated.env083.uniq  %>% 
+  filter(str_detect(species, "Phocoena phocoena")) 
+
+Beba.unique_083_F_A <- md.taxa.long.formated.env083.uniq  %>% 
+  filter(str_detect(species, "Berardius bardii")) 
+
+Baph.unique_083_F_A <- md.taxa.long.formated.env083.uniq  %>% 
+  filter(str_detect(species, "Balaenoptera physalus")) 
+
+Oror.unique_083_F_A <- md.taxa.long.formated.env083.uniq  %>% 
+  filter(str_detect(species, "Orcinus orca")) 
+
+binded<-rbind(Laob.unique_083_F_A,Meno.unique_083_F_A,Grgr.unique_083_F_A,
+              Libo.unique_083_F_A,Phda.unique_083_F_A,Phph.unique_083_F_A,
+              Oror.unique_083_F_A,Baph.unique_083_F_A,Beba.unique_083_F_A)
+
+write.csv(binded, "./dataframes/binded_eDNA.csv")
+
+Laob.unique_083_F <- Laob.unique_083_F_A  %>% 
+  dplyr::select(c(40,26,25,41:56))
+
+Meno.unique_083_F <- Meno.unique_083_F_A  %>% 
+  dplyr::select(c(40,26,25,41:56)) 
+
+Grgr.unique_083_F <- Grgr.unique_083_F_A  %>% 
+  dplyr::select(c(40,26,25,41:56)) 
+
+Libo.unique_083_F <- Libo.unique_083_F_A  %>% 
+  dplyr::select(c(40,26,25,41:56)) 
+
+##Surface Presence Map
+color_mapping <- c("0" = "white", "1" = "#ffce00", "2" = "#ff9a00", "3" = "#ff5a00", "4"="#ff0000", "5"="#940000")
+color_mapping <- c("0" = "white", "1" = "#ff5a00")
+
+Laob <- ggplot() +
+  geom_tile(data = envCov_WA_surface_083_082019_df,
+            aes(x = x, y = y, fill = bathy)) +
+  geom_point(data = Laob.unique_083_F,
+             aes(x = lon, y = lat, color = as.factor(Presence)),size=5) +
+  scale_fill_continuous(type = "gradient") +
+  scale_color_manual(values = color_mapping) +  
+  labs(title = "Pacific white-sided dolphin eDNA detections")
+
+Laob + theme(legend.position="right", legend.box = "vertical",plot.title = element_text(size = 15, face = "bold"),
+             legend.title=element_text(size=15), 
+             legend.text=element_text(size=10),
+             legend.spacing.y = unit(0.5, 'cm'))
+
+Meno <- ggplot() +
+  geom_tile(data = envCov_WA_surface_083_082019_df,
+            aes(x = x, y = y, fill = bathy)) +
+  geom_point(data = Meno.unique_083_F,
+             aes(x = lon, y = lat, color = as.factor(Presence)),size=5) +
+  scale_fill_continuous(type = "gradient") +
+  scale_color_manual(values = color_mapping) +  
+  labs(title = "Humpback whale eDNA detections")
+
+Meno + theme(legend.position="right", legend.box = "vertical",plot.title = element_text(size = 15, face = "bold"),
+             legend.title=element_text(size=15), 
+             legend.text=element_text(size=10),
+             legend.spacing.y = unit(0.5, 'cm'))
+
+Grgr <- ggplot() +
+  geom_tile(data = envCov_WA_surface_083_082019_df,
+            aes(x = x, y = y, fill = bathy)) +
+  geom_point(data = Grgr.unique_083_F,
+             aes(x = lon, y = lat, color = as.factor(Presence)),size=5) +
+  scale_fill_continuous(type = "gradient") +
+  scale_color_manual(values = color_mapping) +  
+  labs(title = "Risso's dolphin eDNA detections")
+
+Grgr + theme(legend.position="right", legend.box = "vertical",plot.title = element_text(size = 15, face = "bold"),
+             legend.title=element_text(size=15), 
+             legend.text=element_text(size=10),
+             legend.spacing.y = unit(0.5, 'cm'))
+
+### I estimated the distance to the 200m isobath in Qgis so load the df again
+#Laob.unique_083_dist<-read.csv("~/Maxent/occurrences/Laob.unique_083_dist.csv")
+# ENVIRONMENTAL DATA
+
+# Environmental data frame
+
+data<-Laob.unique_083_F %>% 
+  na.omit()
+
+data2<-Laob.unique_083_F[,c(2,3,4,5,6,12,19)] %>% 
+  na.omit()
+
+multicol(data2)
+
+corSelect(data2,var.cols = 1:ncol(data2), cor.thresh = 0.7)
+
+cor_matrix <- cor(data2, method = "spearman")
+cor_matrix_melted <- melt(cor_matrix)
+q<-ggplot(data = cor_matrix_melted, aes(Var1, Var2, fill = value)) +
+  geom_tile() +
+  scale_fill_gradient(low = "light blue", high = "red", na.value = "black") +
+  geom_text(aes(label = round(value, 1)), vjust = 1, size = 3) +  # Smaller font size (adjust size as needed)
+  labs(title = "Correlation Heatmap Environmental data") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1))
+
+ggsave("./images/heatmap_covariate_corr.jpg", plot = q, width = 7, height = 7, units = "in", dpi = 300)
+
+
+# Boxplots
+
+# Create a grid of boxplots for multiple variables
+response_variables <- c("lat", "lon", "bathy", "dist_shore", "slope","SSH","SWT")
+
+# Define a function to create individual plots
+create_boxplot <- function(variable) {
+  ggplot(Laob.unique_083_dist) +
+    aes(x = as.factor(Presence), y = .data[[variable]]) +
+    geom_boxplot(fill = "#4682B4") +
+    labs(y = variable, x = "eDNA presence") +
+    theme_bw()+
+    theme(axis.title.x = element_text(size = 7),
+          axis.title.y = element_text(size = 7)
+    )
+}
+
+# Create a list of individual plots
+plots_list <- lapply(response_variables, create_boxplot)
+
+# Combine the list of plots into a grid
+library(grid)
+library(gridExtra)
+library(MuMIn)
+
+grid.text("Pacific white-sided dolphin", x = 0.1, y = 0.95, gp = gpar(fontsize = 16, fontface = "bold"))
+grid.text("eDNA detections", x = 0.1, y = 0.92, gp = gpar(fontsize = 14))
+grid.arrange(grobs = plots_list, ncol = 4)
+
+#Heatmap
+
+replicates2<-read_csv("./dataframes/md_taxa_wide_sum_reads2.csv")
+
+replicates_map <- replicates2 %>% 
+  dplyr::select(32:43) %>% 
+  group_by(station) %>%
+  summarize(
+    lat = first(lat),  
+    lon = first(lon),  
+    across(where(is.numeric) & !one_of(c("lat", "lon")), sum, na.rm = TRUE)) %>% 
+  ungroup() %>% 
+  setNames(c("Station","lat","lon","Fin whale","Baird's beaked whale","Risso's dolphin", "Pacific white-sided dolphin","Northern right whale dolphin",
+             "Humpback whale","Orca","Harbour porpoise", "Dall's porpoise")) %>%
+  mutate(across(4:12, ~ if_else(. > 0, 1, 0), .names = "new_{.col}")) %>% 
+  mutate("Total species detected" = rowSums(.[, 13:21])) %>% 
+  dplyr::select(-c(4:12)) %>% 
+  setNames(c("Station","lat","lon","Fin whale","Baird's beaked whale","Risso's dolphin", "Pacific white-sided dolphin","Northern right whale dolphin",
+             "Humpback whale","Orca","Harbour porpoise", "Dall's porpoise", "TOTAL")) 
+
+#write.csv(replicates_map,"./dataframes/replicates_map.csv")
+
+replicates_map2<-replicates_map %>%  
+  dplyr::select(-c(2:3)) %>% 
+  gather(key="species", value="count",-Station)%>%
+  # rename columns
+  setNames(c("Station", "Species", "count")) %>%
+  # convert year to factor
+  mutate(Station=factor(Station)) %>%
+  # convert week to factor
+  mutate(Species = fct_reorder(Species, desc(Species)),
+         count = as.factor(count)) %>% 
+  arrange(Station) %>% 
+  mutate(Species = fct_relevel(Species, "TOTAL", after = Inf))
+
+
+(p <- ggplot(replicates_map2, aes(y = Species, x = Station, fill = count)) +
+    geom_tile(color = textcol, size = 0.25) +
+    # geom_text(aes(label = count), color = "black", size = 3) +  
+    scale_fill_brewer(palette = "Blues", direction=1) +  
+    theme_bw()+
+    #scale_x_discrete(expand = c(0, 0)) +
+    # theme_grey(base_size = 10) +
+    #  coord_flip() +
+    theme(text = element_text(family = "Helvetica"),
+          axis.text.x = element_text(size = 6, color = "black", face = "bold", angle = 90, hjust = 1.1, vjust=0.5),  # Rotate x-axis labels
+          axis.text.y = element_text(size = 6, color = "black", face = "bold", hjust = 1.01, vjust=1),
+          #   axis.title.x = element_text(size = 7, color = "black", face = "bold",hjust = 0.5,vjust=0),
+          axis.title.x = element_blank(),
+          axis.title.y = element_blank(),
+          axis.ticks.y = element_blank(),  # Remove y-axis ticks
+          axis.ticks.x = element_blank(),
+          legend.position="right", legend.direction="vertical",
+          legend.title=element_text(colour="black",size = 6, face="bold"),
+          legend.text=element_text(colour="black", size=5, face="bold")) +  # Set y-axis text properties
+    guides(fill = guide_legend(keyheight = unit(0.4, "cm"), keywidth = unit(0.4, "cm"))) ) # Increase legend size
+
+# Save the plot as a high-resolution BMP image
+ggsave("./images/heatmap_eDNAdetections.jpg", plot = p, width = 7, height = 2, units = "in", dpi = 300)
+
+
