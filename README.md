@@ -5,6 +5,7 @@ The repository contains R code that can be utilized to acquire environmental lay
 The input ASV data used for this paper can be accessed in one of two ways:
 
 **1** - MMARINeDNA team members can access the data from MiSeq plates 306, 307, and 308 on the MURI Google Drive folder ~\Module 3 - West Coast eDNA cetaceans & prey\06 M3 Processed Data.
+
 **2** - Anyone else interested in these data should download the fastq files from NCBI (Accession #s: XXXX) and run them through the [metabarcoding QAQC pipeline](https://github.com/MMARINeDNA/metabarcoding_QAQC_pipeline). Using the pre-loaded default parameters will regenerate the same AVS tables used in this paper. Detailed information on how to use the pipeline, which parameters are used, and the effect of varying those parameters, can be found on the [pipeline Wiki](https://github.com/MMARINeDNA/metabarcoding_QAQC_pipeline/wiki).
 
 The processing steps are divided into three parts.
