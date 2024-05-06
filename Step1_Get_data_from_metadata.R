@@ -29,7 +29,7 @@ library("geobgu")
 ###
 #We are going to create a megadatabase with the information of all the runs 306-308
 ###
-setwd("~/Library/CloudStorage/GoogleDrive-tania.valdiviac@gmail.com/My Drive/2.2023/05_MURI_Module_3_Tania/Documents/Manuscript_eDNA-occurrenceSDM/Github/")
+#setwd("~/Library/CloudStorage/GoogleDrive-tania.valdiviac@gmail.com/My Drive/2.2023/05_MURI_Module_3_Tania/Documents/Manuscript_eDNA-occurrenceSDM/Github/")
 
 md_306 <- read.csv(paste0("./dataframes/metadata_merged.csv"),header = TRUE, sep=",")
 md_306 <- md_306 %>% 
@@ -38,7 +38,7 @@ md_306 <- md_306 %>%
   separate(Sample_ID, into = c("barcode", "project", "sample","dilution","replicate"), sep = "-", remove = FALSE) %>%
   unite(col = "sampleID", project, sample, dilution, sep = "-") %>% 
   dplyr::select(-X,-barcode,-Sample_Name, -Description,-replicate)
-taxon_table_306A <- read.csv(paste0("./306/taxon_table.csv"))
+taxon_table_306A <- read.csv(paste0("./dataframes/306taxon_table.csv"))
 taxon_table_306 <- taxon_table_306A %>% 
   dplyr::select(-1) %>% 
   rename_with(~"Sample_ID", 1) %>% 
@@ -151,7 +151,7 @@ md.taxa.long <- md.taxa %>%
   unite(col = "sampleID_station", sampleID:station, sep = "_")
 
 #DATA IN LONG FORMAT 
-md.taxa.rep<-read.csv("./md_taxa_rep.csv",header = TRUE,sep = ",")
+md.taxa.rep<-read.csv("./dataframes/md_taxa_rep.csv",header = TRUE,sep = ",")
 
 md.taxa.long.rep <- md.taxa.rep %>% 
   pivot_longer(cols=35:length(md.taxa.rep), names_to = "species_rep", values_to = "read_count") %>% 

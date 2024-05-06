@@ -26,7 +26,7 @@ source('custom_functions.R')
 #remotes::install_github("michaeldorman/geobgu", force = TRUE)
 library("geobgu")
 ###
-setwd("~/Library/CloudStorage/GoogleDrive-tania.valdiviac@gmail.com/My Drive/2.2023/05_MURI_Module_3_Tania/Documents/Manuscript_eDNA-occurrenceSDM/Github/")
+#setwd("~/Library/CloudStorage/GoogleDrive-tania.valdiviac@gmail.com/My Drive/2.2023/05_MURI_Module_3_Tania/Documents/Manuscript_eDNA-occurrenceSDM/Github/")
 -------------------------------------------
   #Retrieve Environmental Data, 
   #this is provitional environmental data not from the sampling dates, but means from 1994 to 2009
@@ -79,9 +79,9 @@ sdmpredictors::load_layers(layers, datadir = "./downloaded_predictors/", rasters
 
 ####envCov_USA_surface_083_082019
 
-bathy_083<-raster('./downloaded_predictors/bathy.tif')
-dist_shore_083<-raster('./downloaded_predictors/dist_shore.tif')
-slope_083<-raster('./downloaded_predictors/slope.tif')
+bathy_083<-raster('./downloaded_predictors/MS_bathy_5m_lonlat.tif')
+dist_shore_083<-raster('./downloaded_predictors/MS_biogeo05_dist_shore_5m_lonlat.tif')
+slope_083<-raster('./downloaded_predictors/MS_biogeo06_bathy_slope_5m_lonlat.tif')
 
 #Manually obtain from env layers from COPERNICUS and load them
 #surface_083_082019
