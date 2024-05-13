@@ -29,7 +29,7 @@ library("geobgu")
 ###
 #We are going to create a megadatabase with the information of all the runs 306-308
 ###
-#setwd("~/Library/CloudStorage/GoogleDrive-tania.valdiviac@gmail.com/My Drive/2.2023/05_MURI_Module_3_Tania/Documents/Manuscript_eDNA-occurrenceSDM/Github/")
+setwd("~/Library/CloudStorage/GoogleDrive-tania.valdiviac@gmail.com/My Drive/2.2023/05_MURI_Module_3_Tania/Documents/Manuscript_eDNA-occurrenceSDM/Github/")
 
 md_306 <- read.csv(paste0("./dataframes/metadata_merged.csv"),header = TRUE, sep=",")
 md_306 <- md_306 %>% 
@@ -124,6 +124,57 @@ md.taxa<-full_join(md.taxa, taxon_table_308_5, by="sampleID", suffix = c(".x", "
   dplyr::select(-Sample_ID) %>% 
   mutate_at(vars(34:66), as.numeric)
 
+md.taxa.rep<-md.taxa %>% 
+  mutate(`Balaenoptera physalus_r2`=NA) %>% 
+  relocate(`Balaenoptera physalus_r2`,.after=`Balaenoptera physalus_r1`) %>% 
+  relocate(`Balaenoptera physalus_r3`,.after=`Balaenoptera physalus_r2`) %>% 
+  relocate(`Balaenoptera physalus_r4`,.after=`Balaenoptera physalus_r3`) %>% 
+  relocate(`Balaenoptera physalus_r5`,.after=`Balaenoptera physalus_r4`) %>% 
+  relocate(`Grampus griseus_r2`,.after=`Grampus griseus_r1`) %>% 
+  relocate(`Grampus griseus_r3`,.after=`Grampus griseus_r2`) %>% 
+  relocate(`Grampus griseus_r4`,.after=`Grampus griseus_r3`) %>% 
+  relocate(`Grampus griseus_r5`,.after=`Grampus griseus_r4`) %>% 
+  relocate(`Grampus griseus_r2`,.after=`Grampus griseus_r1`) %>% 
+  relocate(`Lagenorhynchus obliquidens_r2`,.after=`Lagenorhynchus obliquidens_r1`) %>% 
+  relocate(`Lagenorhynchus obliquidens_r3`,.after=`Lagenorhynchus obliquidens_r2`) %>% 
+  relocate(`Lagenorhynchus obliquidens_r4`,.after=`Lagenorhynchus obliquidens_r3`) %>% 
+  relocate(`Lagenorhynchus obliquidens_r5`,.after=`Lagenorhynchus obliquidens_r4`) %>% 
+  mutate(`Orcinus orca_r2`=NA) %>%
+  mutate(`Orcinus orca_r3`=NA) %>%
+  mutate(`Orcinus orca_r4`=NA) %>%
+  mutate(`Orcinus orca_r5`=NA) %>%
+  relocate(`Orcinus orca_r2`,.after=`Orcinus orca_r1`) %>% 
+  relocate(`Orcinus orca_r3`,.after=`Orcinus orca_r2`) %>% 
+  relocate(`Orcinus orca_r4`,.after=`Orcinus orca_r3`) %>% 
+  relocate(`Orcinus orca_r5`,.after=`Orcinus orca_r4`) %>% 
+  relocate(`Phocoenoides dalli_r2`,.after=`Phocoenoides dalli_r1`) %>% 
+  relocate(`Phocoenoides dalli_r3`,.after=`Phocoenoides dalli_r2`) %>% 
+  relocate(`Phocoenoides dalli_r4`,.after=`Phocoenoides dalli_r3`) %>% 
+  relocate(`Phocoenoides dalli_r5`,.after=`Phocoenoides dalli_r4`) %>% 
+  relocate(`Megaptera novaeangliae_r2`,.after=`Megaptera novaeangliae_r1`) %>% 
+  relocate(`Megaptera novaeangliae_r3`,.after=`Megaptera novaeangliae_r2`) %>% 
+  relocate(`Megaptera novaeangliae_r4`,.after=`Megaptera novaeangliae_r3`) %>% 
+  relocate(`Megaptera novaeangliae_r5`,.after=`Megaptera novaeangliae_r4`) %>% 
+  mutate(`Lissodelphis borealis_r2`=NA) %>%
+  relocate(`Lissodelphis borealis_r2`,.after=`Lissodelphis borealis_r1`) %>% 
+  relocate(`Lissodelphis borealis_r3`,.after=`Lissodelphis borealis_r2`) %>% 
+  relocate(`Lissodelphis borealis_r4`,.after=`Lissodelphis borealis_r3`) %>% 
+  relocate(`Lissodelphis borealis_r5`,.after=`Lissodelphis borealis_r4`) %>% 
+  mutate(`Berardius bairdii_r1`=NA) %>%
+  mutate(`Berardius bairdii_r2`=NA) %>%
+  relocate(`Berardius bairdii_r2`,.after=`Berardius bairdii_r1`) %>% 
+  relocate(`Berardius bairdii_r3`,.after=`Berardius bairdii_r2`) %>% 
+  relocate(`Berardius bairdii_r4`,.after=`Berardius bairdii_r3`) %>% 
+  relocate(`Berardius bairdii_r5`,.after=`Berardius bairdii_r4`) %>% 
+  mutate(`Phocoena phocoena_r1`=NA) %>%
+  mutate(`Phocoena phocoena_r3`=NA) %>%
+  mutate(`Phocoena phocoena_r4`=NA) %>%
+  mutate(`Phocoena phocoena_r5`=NA) %>%
+  relocate(`Phocoena phocoena_r2`,.after=`Phocoena phocoena_r1`) %>% 
+  relocate(`Phocoena phocoena_r3`,.after=`Phocoena phocoena_r2`) %>% 
+  relocate(`Phocoena phocoena_r4`,.after=`Phocoena phocoena_r3`) %>% 
+  relocate(`Phocoena phocoena_r5`,.after=`Phocoena phocoena_r4`)
+
 #DATA IN LONG FORMAT 
 md.taxa.long <- md.taxa %>% 
   pivot_longer(cols=34:length(md.taxa), names_to = "species_rep", values_to = "read_count") %>% 
@@ -150,25 +201,29 @@ md.taxa.long <- md.taxa %>%
   relocate(station, .after = sampleID) %>% 
   unite(col = "sampleID_station", sampleID:station, sep = "_")
 
+#md.taxa.rep<-read.csv("./dataframes/md_taxa_rep.csv",header = TRUE,sep = ",")
+
 #DATA IN LONG FORMAT 
-md.taxa.rep<-read.csv("./dataframes/md_taxa_rep.csv",header = TRUE,sep = ",")
+# md.taxa.long.rep <- md.taxa.rep %>% 
+#   pivot_longer(cols=34:length(md.taxa.rep), names_to = "species_rep", values_to = "read_count") %>% 
+#   separate(species_rep, into = c("species","rep"), sep = "_") %>% 
+#   #separate(species, into = c("genus","species"), sep = " ") %>% 
+#   #separate(species_rep, into = c("species","rep"), sep = "//-//") %>% 
+#   #unite(col = "species", genus:species, sep = " ") %>% 
+#   mutate(rep = str_remove(rep, "r")) %>%
+#   filter(!is.na(read_count)) %>% 
+#   #mutate(rep = as.numeric(rep)) %>% 
+#   #group_by(sampleID, species, read_count) %>% 
+#   mutate(Presence = case_when(read_count > 0 ~ 1, TRUE ~ 0)) 
+# 
 
-md.taxa.long.rep <- md.taxa.rep %>% 
-  pivot_longer(cols=35:length(md.taxa.rep), names_to = "species_rep", values_to = "read_count") %>% 
-  separate(species_rep, into = c("genus","species","rep"), sep = "_") %>% 
-  #separate(species_rep, into = c("species","rep"), sep = "//-//") %>% 
-  unite(col = "species", genus:species, sep = " ") %>% 
-  mutate(rep = str_remove(rep, "r")) %>%
-  filter(!is.na(read_count)) %>% 
-  #mutate(rep = as.numeric(rep)) %>% 
-  #group_by(sampleID, species, read_count) %>% 
-  mutate(Presence = case_when(read_count > 0 ~ 1, TRUE ~ 0)) 
 
-#SUMMARY
-summary <-md.taxa.long %>% 
-  dplyr::group_by(species) %>% 
-  dplyr::mutate(total_detections = sum(sum_occurrence)) %>% 
-  dplyr::select(-c(1:33, 35:37)) %>% 
-  slice_head()
+# #SUMMARY
+# summary <-md.taxa.long %>% 
+#   dplyr::group_by(species) %>% 
+#   dplyr::mutate(total_detections = sum(sum_occurrence)) %>% 
+#   dplyr::select(-c(1:32, 35:37)) %>% 
+#   slice_head()
+
 
 
