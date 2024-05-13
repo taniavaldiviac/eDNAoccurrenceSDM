@@ -1,9 +1,9 @@
 ###
-
-#Step 2 Load environmental covariates
+#Step 2 Load environmental covariates and extract data to study sites
 #Tania Valdivia Carrillo
 
-#Environmental covariates were obtained from MARSPEC and COPERNICUS repositories
+#Environmental tif layers were obtained from MARSPEC and COPERNICUS repositories with two purposes. 1) to extract the environmental information per
+#location in our metadata file; and #2) to create a raster brick to project the models to.
 
 #Install packages
 list.of.packages=c("raster", "rgdal", "dplyr")
@@ -21,7 +21,8 @@ library("geobgu")
 ###
 setwd("~/Library/CloudStorage/GoogleDrive-tania.valdiviac@gmail.com/My Drive/2.2023/05_MURI_Module_3_Tania/Documents/Manuscript_eDNA-occurrenceSDM/Github/")
 
-####Load predictors from downloaded_predictors folder. 
+####Load predictors from downloaded_predictors folder.
+
 # Surface data, resolution 0.083x0.083, date: 08/2019
 
 #BioOracle
@@ -76,30 +77,24 @@ plot(envCov_USA_surface_083_082019)
 #Mask to WA coast
 WA_short<- readOGR("./downloaded_predictors/shp/Mask_WA_Coast_short_B.shp")
 
-bathy_spol_083_082019 <- raster::mask(bathy_083, WA_short, updateNA=TRUE) 
-dist_shore_spol_083_082019 <- raster::mask(dist_shore_083, WA_short,updateNA=TRUE) 
-slope_spol_083_082019 <- raster::mask(slope_083, WA_short,updateNA=TRUE) 
-lon_spol_083_082019 <- raster::mask(lon_083, WA_short,updateNA=TRUE) 
-lat_spol_083_082019 <- raster::mask(lat_083, WA_short,updateNA=TRUE)
-SWT_surface_spol_083_082019 <- raster::mask(SWT_surface_083_082019, WA_short,updateNA=TRUE)
-SSH_surface_spol_083_082019 <- raster::mask(SSH_surface_083_082019, WA_short,updateNA=TRUE)
-
 envCov_spol_surface_083_082019 <- raster::mask(envCov_USA_surface_083_082019, WA_short,updateNA=TRUE)
+
 plot(envCov_spol_surface_083_082019)
-writeRaster(envCov_USA_surface_083_082019,"./downloaded_predictors/envCov_USA_surface_083_082019.tif", options="INTERLEAVE=BAND",overwrite = TRUE)
-writeRaster(envCov_spol_surface_083_082019,"./downloaded_predictors/envCov_spol_surface_083_082019.tif", options="INTERLEAVE=BAND",overwrite = TRUE)
+
+# writeRaster(envCov_USA_surface_083_082019,"./downloaded_predictors/envCov_USA_surface_083_082019.tif", options="INTERLEAVE=BAND",overwrite = TRUE)
+# writeRaster(envCov_spol_surface_083_082019,"./downloaded_predictors/envCov_spol_surface_083_082019.tif", options="INTERLEAVE=BAND",overwrite = TRUE)
 
 envCov_spol_surface_083_082019_df <- as.data.frame(envCov_spol_surface_083_082019, xy = TRUE)
 
 (p <- ggplot() +
-    geom_raster(data = envCov_spol_surface_083_082019_df, aes(x = x, y = y, fill = lat)) +
+    geom_raster(data = envCov_spol_surface_083_082019_df, aes(x = x, y = y, fill = bathy)) +
     scale_fill_viridis_c() +
     coord_quickmap() +
     theme(legend.key.width = unit(1, "cm"), 
           legend.key.height = unit(1, "cm"), 
           legend.text = element_text(size = 10),
           legend.title = element_text(size = 10),
-          plot.title = element_text(size = 18))+
+          plot.title = element_text(size = 16))+
     labs(title = "Bathymetry"))
 #ggsave(".png", plot = p, width = 8, height = 6, units = "in", dpi = 300)
 
@@ -107,12 +102,12 @@ envCov_spol_surface_083_082019_df <- as.data.frame(envCov_spol_surface_083_08201
 
 #Extract env_info per coordinate
 #coordinates(coord) <-c("lon", "lat")
-md.taxa.long.formated<-read.csv("./dataframes/md_taxa_long_formated.csv") #ordered by latitude 
-coord <- md.taxa.long.formated[,c(24,23)] # Order must be lon lat
+# md.taxa.long.formated<-read.csv("./dataframes/md_taxa_long_formated.csv") #ordered by latitude 
+coord <- md.taxa.long[,c(24,23)] # Order must be lon lat
 envCov_surface_083_df<-raster::extract(envCov_spol_surface_083_082019,coord,df=TRUE) %>% 
   select(!c(lat,lon))
 
-md.taxa.long.formated.env083<-bind_cols(md.taxa.long.formated,envCov_surface_083_df) 
+md.taxa.long.formated.env083<-bind_cols(md.taxa.long,envCov_surface_083_df) 
   
 #write.csv(envCov_surface_083_df, "./dataframes/envCov_surface_083_df.csv")
 #write.csv(md.taxa.long.formated.env083, "./dataframes/md_taxa_long_formated_env083.csv")
