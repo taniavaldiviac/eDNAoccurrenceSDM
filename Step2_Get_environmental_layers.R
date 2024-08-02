@@ -1,9 +1,11 @@
 ###
 #Step 2 Load environmental covariates and extract data to study sites
+
 #Tania Valdivia Carrillo
 
-#Environmental tif layers were obtained from MARSPEC and COPERNICUS repositories with two purposes. 1) to extract the environmental information per
-#location in our metadata file; and #2) to create a raster brick to project the models to.
+#Environmental layers (.tif) were obtained from MARSPEC (using sdmpredictors package) and COPERNICUS (https://data.marine.copernicus.eu/product/GLOBAL_ANALYSISFORECAST_PHY_001_024/description)
+#repositories to extract the environmental information for each sampling location in our metadata file. To achieve this, we homogenized the extent of all layers using the shapefile in the ./downloaded_predictors/shp/
+#folder. All the processed layers are contained in the ./downloaded-predictors/ folder and are ready to be used in the Step2_Get_environmental_layers.R.
 
 #Install packages
 list.of.packages=c("raster", "rgdal", "dplyr")
@@ -19,7 +21,8 @@ source('custom_functions.R')
 #remotes::install_github("michaeldorman/geobgu", force = TRUE)
 library("geobgu")
 ###
-setwd("~/Library/CloudStorage/GoogleDrive-tania.valdiviac@gmail.com/My Drive/2.2023/05_MURI_Module_3_Tania/Documents/Manuscript_eDNA-occurrenceSDM/Github/")
+
+#Set the working directory to the main folder where this repository (eDNAoccurrenceSDM) is located on your disk.
 
 ####Load predictors from downloaded_predictors folder.
 
