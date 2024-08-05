@@ -1,32 +1,23 @@
-###
 #Step1: Get data from metadata
-#Code for data wrangling to join the information from the tree metabarcoding technical 
-#replicates targeting marine mammals in seawater samples from the WA coast
+#Tania Valdivia Carrillo (tania.valdiviac@gmail.com)
+#Code for data wrangling to join the information from the tree metabarcoding technical replicates targeting marine mammals 
+#in seawater samples from the WA coast
 
-#Tania Valdivia Carrillo
-
-###
 ##Install packages
 list.of.packages=c("sdmpredictors","leaflet", "recipes","raster", "ncdf4","ggplot2","viridis","RColorBrewer",
                    "ggsn","rnaturalearth","rnaturalearthdata","kableExtra","biomod2","knitr","readr",
                    "magrittr","taxize","stars","dplyr","sf","scico","patchwork","stringr",
                    "stringi","vegan","tidyr", "librarian","sp","rgdal","mgcv","gratia","janitor",'tibble')
-
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, dependencies = T)
-
 library(librarian)
-
 librarian::shelf(list.of.packages)
 source('custom_functions.R')
 
 #remotes::install_github("michaeldorman/geobgu", force = TRUE)
 library("geobgu")
 
-###
-#We are going to create a database with the information of all the runs 306-308
-###
-
+###SETWD
 #IMPORTANT: Set the working directory to the main folder where this repository (eDNAoccurrenceSDM) is located on your disk.
 
 md_306 <- read.csv(paste0("./dataframes/metadata_merged.csv"),header = TRUE, sep=",")
@@ -111,16 +102,12 @@ md.taxa<-full_join(md.taxa_306, taxon_table_307, by="sampleID", suffix = c(".x",
   dplyr::select(-Sample_ID)
 md.taxa<-full_join(md.taxa, taxon_table_308_3, by="sampleID", suffix = c(".x", ".y"))%>% 
   dplyr::select(-Sample_ID)
-
 md.taxa[] <- lapply(md.taxa, function(x) replace(x, is.na(x), 0))
-
 md.taxa<-full_join(md.taxa, taxon_table_308_4, by="sampleID", suffix = c(".x", ".y"))%>% 
   dplyr::select(-Sample_ID)
-
 md.taxa<-full_join(md.taxa, taxon_table_308_5, by="sampleID", suffix = c(".x", ".y"))%>% 
   dplyr::select(-Sample_ID) %>% 
   mutate_at(vars(34:66), as.numeric)
-
 md.taxa.rep<-md.taxa %>% 
   mutate(`Balaenoptera physalus_r2`=NA) %>% 
   relocate(`Balaenoptera physalus_r2`,.after=`Balaenoptera physalus_r1`) %>% 
