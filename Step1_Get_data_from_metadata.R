@@ -27,7 +27,7 @@ library("geobgu")
 #We are going to create a database with the information of all the runs 306-308
 ###
 
-setwd("~/Library/CloudStorage/GoogleDrive-tania.valdiviac@gmail.com/My Drive/2.2023/05_MURI_Module_3_Tania/Documents/Manuscript_eDNA-occurrenceSDM/Github/")
+#IMPORTANT: Set the working directory to the main folder where this repository (eDNAoccurrenceSDM) is located on your disk.
 
 md_306 <- read.csv(paste0("./dataframes/metadata_merged.csv"),header = TRUE, sep=",")
 md_306 <- md_306 %>% 
