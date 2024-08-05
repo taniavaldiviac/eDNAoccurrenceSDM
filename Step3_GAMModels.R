@@ -14,8 +14,8 @@ if(length(new.packages)) install.packages(new.packages, dependencies = T)
 library(librarian)
 librarian::shelf(list.of.packages)
 
-###
-setwd("~/Library/CloudStorage/GoogleDrive-tania.valdiviac@gmail.com/My Drive/2.2023/05_MURI_Module_3_Tania/Documents/Manuscript_eDNA-occurrenceSDM/Github/")
+### SETWD
+#Set the working directory to the main folder where this repository (eDNAoccurrenceSDM) is located on your disk.
 
 md.taxa.long.formated.env083.uniq<-read.csv("./dataframes/md.taxa.long.formated.env083.uniq.csv")
 
