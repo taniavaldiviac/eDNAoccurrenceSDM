@@ -1,14 +1,11 @@
 ###
-
 #Step1: Get data from metadata
-
 #Code for data wrangling to join the information from the tree metabarcoding technical 
 #replicates targeting marine mammals in seawater samples from the WA coast
 
 #Tania Valdivia Carrillo
 
 ###
-
 ##Install packages
 list.of.packages=c("sdmpredictors","leaflet", "recipes","raster", "ncdf4","ggplot2","viridis","RColorBrewer",
                    "ggsn","rnaturalearth","rnaturalearthdata","kableExtra","biomod2","knitr","readr",
@@ -27,8 +24,9 @@ source('custom_functions.R')
 library("geobgu")
 
 ###
-#We are going to create a megadatabase with the information of all the runs 306-308
+#We are going to create a database with the information of all the runs 306-308
 ###
+
 setwd("~/Library/CloudStorage/GoogleDrive-tania.valdiviac@gmail.com/My Drive/2.2023/05_MURI_Module_3_Tania/Documents/Manuscript_eDNA-occurrenceSDM/Github/")
 
 md_306 <- read.csv(paste0("./dataframes/metadata_merged.csv"),header = TRUE, sep=",")
@@ -44,7 +42,6 @@ taxon_table_306 <- taxon_table_306A %>%
   rename_with(~"Sample_ID", 1) %>% 
   filter(!str_detect(Sample_ID, "Sus scrofa")) %>% 
   filter(!str_detect(Sample_ID, "Bos taurus")) %>% 
- # drop_na(Sample_ID) %>% 
   t %>% 
   row_to_names(row_number = 1) %>% 
   as.data.frame() %>%
@@ -200,30 +197,3 @@ md.taxa.long <- md.taxa %>%
   dplyr::select(-rep,-read_count,-occurrence) %>% 
   relocate(station, .after = sampleID) %>% 
   unite(col = "sampleID_station", sampleID:station, sep = "_")
-
-#md.taxa.rep<-read.csv("./dataframes/md_taxa_rep.csv",header = TRUE,sep = ",")
-
-#DATA IN LONG FORMAT 
-# md.taxa.long.rep <- md.taxa.rep %>% 
-#   pivot_longer(cols=34:length(md.taxa.rep), names_to = "species_rep", values_to = "read_count") %>% 
-#   separate(species_rep, into = c("species","rep"), sep = "_") %>% 
-#   #separate(species, into = c("genus","species"), sep = " ") %>% 
-#   #separate(species_rep, into = c("species","rep"), sep = "//-//") %>% 
-#   #unite(col = "species", genus:species, sep = " ") %>% 
-#   mutate(rep = str_remove(rep, "r")) %>%
-#   filter(!is.na(read_count)) %>% 
-#   #mutate(rep = as.numeric(rep)) %>% 
-#   #group_by(sampleID, species, read_count) %>% 
-#   mutate(Presence = case_when(read_count > 0 ~ 1, TRUE ~ 0)) 
-# 
-
-
-# #SUMMARY
-# summary <-md.taxa.long %>% 
-#   dplyr::group_by(species) %>% 
-#   dplyr::mutate(total_detections = sum(sum_occurrence)) %>% 
-#   dplyr::select(-c(1:32, 35:37)) %>% 
-#   slice_head()
-
-
-
