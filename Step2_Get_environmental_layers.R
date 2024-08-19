@@ -111,8 +111,17 @@ envCov_surface_083_df<-raster::extract(envCov_spol_surface_083_082019,coord,df=T
   select(!c(lat,lon))
 
 md.taxa.long.formated.env083<-bind_cols(md.taxa.long,envCov_surface_083_df) 
+
+md.taxa.long.formated.env083.uniq<-md.taxa.long.formated.env083 %>% 
+  separate(sampleID_station, into = c("sampleID", "station"), sep = "_", remove = FALSE) %>% 
+  mutate(Presence = ifelse(sum_occurrence >= 1, 1, 0)) %>% 
+  relocate(`Presence`,.after=`prob_detection`) %>% 
+  group_by(lat, lon, species) %>%
+  filter(Presence == max(Presence)) %>%
+  slice_head() %>%
+  ungroup()
   
-#write.csv(envCov_surface_083_df, "./dataframes/envCov_surface_083_df.csv")
-#write.csv(md.taxa.long.formated.env083, "./dataframes/md_taxa_long_formated_env083.csv")
+write.csv(envCov_surface_083_df, "./dataframes/envCov_surface_083_df.csv")
+write.csv(md.taxa.long.formated.env083, "./dataframes/md_taxa_long_formated_env083.csv")
 
 
