@@ -19,25 +19,21 @@ librarian::shelf(list.of.packages)
 
 md.taxa.long.formated.env083.uniq<-read.csv("./dataframes/md.taxa.long.formated.env083.uniq.csv")
 
-Laob.unique_083_F_A <- md.taxa.long.formated.env083.uniq  %>% 
-  filter(str_detect(species, "Lagenorhynchus obliquidens")) 
 
-Meno.unique_083_F_A <- md.taxa.long.formated.env083.uniq  %>% 
-  filter(str_detect(species, "Megaptera novaeangliae")) 
+Laob.unique_083_F <- md.taxa.long.formated.env083.uniq  %>% 
+  filter(str_detect(species, "Lagenorhynchus obliquidens")) %>% 
+  dplyr::select(c(39,26,25,41:56)) %>% 
+  filter(!is.na(bathy))
 
-Grgr.unique_083_F_A <- md.taxa.long.formated.env083.uniq  %>% 
-  filter(str_detect(species, "Grampus griseus")) 
+Meno.unique_083_F <- md.taxa.long.formated.env083.uniq  %>% 
+  filter(str_detect(species, "Megaptera novaeangliae")) %>% 
+  dplyr::select(c(39,26,25,41:56)) %>% 
+  filter(!is.na(bathy))
 
-#write.csv(binded, "./dataframes/binded_eDNA.csv")
-
-Laob.unique_083_F <- Laob.unique_083_F_A  %>% 
-  dplyr::select(c(40,26,25,41:56))
-
-Meno.unique_083_F <- Meno.unique_083_F_A  %>% 
-  dplyr::select(c(40,26,25,41:56)) 
-
-Grgr.unique_083_F <- Grgr.unique_083_F_A  %>% 
-  dplyr::select(c(40,26,25,41:56)) 
+Grgr.unique_083_F <- md.taxa.long.formated.env083.uniq  %>% 
+  filter(str_detect(species, "Grampus griseus")) %>% 
+  dplyr::select(c(39,26,25,41:56)) %>% 
+  filter(!is.na(bathy))
 
 #### MODEL SELECTION 
 
@@ -64,6 +60,7 @@ plot(dd.subset.fm2, labAsExpr = TRUE)
 
 confset.95p.fm2 <- get.models(dd.subset.fm2, cumsum(weight) <= .95)
 summary(confset.95p.fm2[[1]])
+
 
 write.csv(dredge_results, file = "../SupplementaryMaterial/Laob_GAMresults.csv", row.names = FALSE)
 
