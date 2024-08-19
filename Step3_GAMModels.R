@@ -1,10 +1,6 @@
 ###
-
-#Step3: GAM models using eDNA-occurence data 
-
+#Step3: GAM models using eDNA-occurrence data 
 #Tania Valdivia Carrillo
-
-###
 
 list.of.packages=c("readr","dplyr","ggplot2", "here", "raster", "mgcv","gratia", "librarian", "lme4", "maps","sf", "car", "usdm", "mgcv.helper","dplyr", 
                    "dsm", "pROC", "gratia","Distance", "knitr", "ggplot2", "rgdal","maptools", "tweedie","stringr","fuzzySim","MuMIn")
@@ -13,8 +9,7 @@ if(length(new.packages)) install.packages(new.packages, dependencies = T)
 library(librarian)
 librarian::shelf(list.of.packages)
 
-###
-#setwd("~/Library/CloudStorage/GoogleDrive-tania.valdiviac@gmail.com/My Drive/2.2023/05_MURI_Module_3_Tania/Documents/Manuscript_eDNA-occurrenceSDM/Github/")
+#IMPORTANT: Set the working directory to the main folder where this repository is located on your disk.
 
 md.taxa.long.formated.env083.uniq<-read.csv("./dataframes/md.taxa.long.formated.env083.uniq.csv")
 

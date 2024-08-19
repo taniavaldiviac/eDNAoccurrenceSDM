@@ -17,7 +17,7 @@ source('custom_functions.R')
 #remotes::install_github("michaeldorman/geobgu", force = TRUE)
 library("geobgu")
 
-#IMPORTANT: Set the working directory to the main folder where this repository (eDNAoccurrenceSDM) is located on your disk.
+#IMPORTANT: Set the working directory to the main folder where this repository is located on your disk.
 
 md_306 <- read.csv(paste0("./dataframes/metadata_merged.csv"),header = TRUE, sep=",")
 md_306 <- md_306 %>% 
