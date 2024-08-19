@@ -22,7 +22,7 @@ source('custom_functions.R')
 library("geobgu")
 ###
 
-#Set the working directory to the main folder where this repository (eDNAoccurrenceSDM) is located on your disk.
+#IMPORTANT: Set the working directory to the main folder where this repository is located on your disk.
 
 ####Load predictors from downloaded_predictors folder.
 
