@@ -7,7 +7,7 @@
 ###
 
 list.of.packages=c("readr","dplyr","ggplot2", "here", "raster", "mgcv","gratia", "librarian", "lme4", "maps","sf", "car", "usdm", "mgcv.helper","dplyr", 
-                   "dsm", "Distance", "knitr", "ggplot2", "rgdal","maptools", "tweedie","stringr","fuzzySim","MuMIn")
+                   "dsm", "pROC","Distance", "knitr", "ggplot2", "rgdal","maptools", "tweedie","stringr","fuzzySim","MuMIn")
 detach("plyr")
 new.packages <- list.of.packages[!(list.of.packages %in% installed.packages()[,"Package"])]
 if(length(new.packages)) install.packages(new.packages, dependencies = T)
