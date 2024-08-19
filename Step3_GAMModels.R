@@ -9,7 +9,7 @@ if(length(new.packages)) install.packages(new.packages, dependencies = T)
 library(librarian)
 librarian::shelf(list.of.packages)
 
-#IMPORTANT: Set the working directory to the main folder where this repository (eDNAoccurrenceSDM) is located on your disk.
+#IMPORTANT: Set the working directory to the main folder where this repository is located on your disk.
 
 md.taxa.long.formated.env083.uniq<-read.csv("./dataframes/md.taxa.long.formated.env083.uniq.csv")
 
